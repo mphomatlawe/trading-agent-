@@ -147,7 +147,13 @@ export default async function handler(
     // Call Anthropic API
     const response = await callAnthropicAPI(validMessages);
 
-    return res.status(200).json(response);
+    // Transform response to match ApiResponse interface
+    const apiResponse: ApiResponse = {
+      content: response.content,
+      error: response.error?.message,
+    };
+
+    return res.status(200).json(apiResponse);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Internal server error";

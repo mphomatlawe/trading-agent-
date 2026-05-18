@@ -16,7 +16,33 @@
  * @deprecated Use crypto-trade-agent-refactored.tsx instead
  */
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+
+interface Trade {
+  coin: string;
+  fullName: string;
+  direction: "LONG" | "SHORT";
+  timeframe: string;
+  entry: string;
+  stopLoss: string;
+  targets: string[];
+  riskReward: string;
+  confidence: number;
+  thesis: string;
+  keyRisks: string[];
+  setup: string;
+  tags?: string[];
+}
+
+interface TradeCardProps {
+  trade: Trade;
+  index: number;
+}
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
 
 const SYSTEM_PROMPT = `You are CryptoEdge, an elite crypto trading strategist with deep expertise in technical analysis, market structure, and crypto market dynamics.
 
@@ -51,7 +77,7 @@ const SUGGESTIONS = [
   "Low cap gems with strong momentum",
 ];
 
-function TradeCard({ trade, index }) {
+function TradeCard({ trade, index }: TradeCardProps) {
   const isLong = trade.direction === "LONG";
   const [visible, setVisible] = useState(false);
 
@@ -187,11 +213,11 @@ function TradeCard({ trade, index }) {
 }
 
 export default function CryptoTradeAgent() {
-  const [input, setInput] = useState("");
-  const [trades, setTrades] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState<string>("");
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const inputRef = useRef(null);
 
   async function generateIdeas() {
@@ -199,7 +225,7 @@ export default function CryptoTradeAgent() {
     setLoading(true);
     setError("");
 
-    const userMsg = { role: "user", content: input };
+    const userMsg: Message = { role: "user" as const, content: input };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
@@ -217,7 +243,7 @@ export default function CryptoTradeAgent() {
       });
 
       const data = await response.json();
-      const raw = data.content.map(b => b.text || "").join("");
+      const raw = data.content.map((b: any) => b.text || "").join("");
 
       // Parse — may be array or single object
       let parsed;
@@ -231,14 +257,14 @@ export default function CryptoTradeAgent() {
       const newTrades = Array.isArray(parsed) ? parsed : [parsed];
       setTrades(prev => [...newTrades, ...prev]);
       setMessages(prev => [...prev, { role: "assistant", content: raw }]);
-    } catch (e) {
-      setError(e.message || "Something went wrong. Try again.");
+    } catch (e: any) {
+      setError(e?.message || "Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  function handleKey(e) {
+  function handleKey(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       generateIdeas();
@@ -307,8 +333,8 @@ export default function CryptoTradeAgent() {
                   borderRadius: "20px", padding: "7px 14px", color: "#6B7280", fontSize: "12px",
                   cursor: "pointer", transition: "all 0.2s", fontFamily: "'JetBrains Mono', monospace",
                 }}
-                  onMouseEnter={e => { e.target.style.borderColor = "rgba(0,230,150,0.3)"; e.target.style.color = "#00E696"; }}
-                  onMouseLeave={e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.color = "#6B7280"; }}
+                  onMouseEnter={e => { (e.target as HTMLButtonElement).style.borderColor = "rgba(0,230,150,0.3)"; (e.target as HTMLButtonElement).style.color = "#00E696"; }}
+                  onMouseLeave={e => { (e.target as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.08)"; (e.target as HTMLButtonElement).style.color = "#6B7280"; }}
                 >{s}</button>
               ))}
             </div>
