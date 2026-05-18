@@ -12,7 +12,7 @@ interface AnthropicResponse {
 
 interface ApiResponse {
   content?: Array<{ text: string }>;
-  error?: string;
+  error?: string | { message: string };
 }
 
 const SYSTEM_PROMPT = `You are CryptoEdge, an elite crypto trading strategist with deep expertise in technical analysis, market structure, and crypto market dynamics.

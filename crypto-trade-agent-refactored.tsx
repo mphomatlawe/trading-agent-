@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, ReactNode } from "react";
+import { useState, useCallback, useMemo, useEffect, memo, ReactNode, KeyboardEvent } from "react";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -359,7 +359,7 @@ const TradeCard = ({ trade, index }: TradeCardProps) => {
     navigator.clipboard.writeText(text);
   }, [trade]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const t = setTimeout(() => setVisible(true), index * 120);
     return () => clearTimeout(t);
   }, [index]);
@@ -483,7 +483,7 @@ const TradeCard = ({ trade, index }: TradeCardProps) => {
   );
 };
 
-const MemoizedTradeCard = React.memo(TradeCard);
+const MemoizedTradeCard = memo(TradeCard);
 
 // ============================================================================
 // LOADING & ERROR COMPONENTS
@@ -629,7 +629,7 @@ export default function CryptoTradeAgent() {
   }, [input, loading, messages]);
 
   const handleKey = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         generateIdeas();
